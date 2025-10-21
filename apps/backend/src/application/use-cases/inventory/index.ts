@@ -1,0 +1,11 @@
+// ==================== INVENTORY USE CASES ====================
+export { UpdateStockUseCase, type UpdateStockInput } from './UpdateStockUseCase'
+export { TransferInventoryUseCase, type TransferInventoryInput } from './TransferInventoryUseCase'
+export { GetInventoryByOutletUseCase, type GetInventoryByOutletInput } from './GetInventoryByOutletUseCase'
+export { GetInventoryByIdUseCase } from './GetInventoryByIdUseCase'
+export { GetInventoryByProductIdUseCase } from './GetInventoryByProductIdUseCase'
+export { GetInventoryMovementsUseCase } from './GetInventoryMovementsUseCase'
+export { GetLowStockItemsUseCase } from './GetLowStockItemsUseCase'
+export { GetInventoryByOutletWithRelationsUseCase } from './GetInventoryByOutletWithRelationsUseCase'
+export { GetInventoryByIdWithRelationsUseCase } from './GetInventoryByIdWithRelationsUseCase'
+export { GetLowStockWithRelationsUseCase } from './GetLowStockWithRelationsUseCase'

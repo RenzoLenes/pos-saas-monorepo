@@ -1,0 +1,27 @@
+{
+  "name": "pos-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "POS SaaS Monorepo - Frontend (Next.js) + Backend (Node.js API)",
+  "scripts": {
+    "dev": "pnpm --parallel --stream dev",
+    "dev:frontend": "pnpm --filter frontend dev",
+    "dev:backend": "pnpm --filter backend dev",
+    "build": "pnpm --recursive build",
+    "build:frontend": "pnpm --filter frontend build",
+    "build:backend": "pnpm --filter backend build",
+    "lint": "pnpm --recursive lint",
+    "typecheck": "pnpm --recursive typecheck",
+    "test": "pnpm --recursive test",
+    "test:backend": "pnpm --filter backend test",
+    "clean": "pnpm --recursive clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}

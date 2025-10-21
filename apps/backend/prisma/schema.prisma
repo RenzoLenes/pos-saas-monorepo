@@ -1,0 +1,278 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Tenants - Top level organization
+model Tenant {
+  id          String    @id @default(cuid())
+  name        String
+  subdomain   String    @unique
+  domain      String?   @unique
+  plan        String    @default("basic") // basic, premium, enterprise
+  status      String    @default("active") // active, suspended, inactive
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  outlets     Outlet[]
+  users       User[]
+  customers   Customer[]
+  products    Product[]
+  categories  Category[]
+  
+  @@map("tenants")
+}
+
+// Users - Admin, managers, cashiers per tenant
+model User {
+  id               String    @id @default(cuid())
+  clerkId          String    @unique
+  email            String    @unique
+  firstName        String
+  lastName         String
+  role             UserRole  @default(cashier)
+  status           String    @default("active") // active, inactive, pending
+  tenantId         String?   // Nullable for superadmin
+  outletId         String?   // If null, user can access all outlets
+
+  // Invitation tracking
+  invitationStatus String?   // null, pending, accepted
+  invitedAt        DateTime?
+  invitedBy        String?   // User ID who invited
+
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  tenant           Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  outlet           Outlet?   @relation(fields: [outletId], references: [id])
+  sales            Sale[]
+  carts            Cart[]
+
+  @@map("users")
+}
+
+// Outlets - Physical stores per tenant
+model Outlet {
+  id          String    @id @default(cuid())
+  name        String
+  address     String?
+  phone       String?
+  email       String?
+  currency    String    @default("USD")
+  locale      String    @default("en-US")
+  timezone    String    @default("UTC")
+  status      String    @default("active")
+  tenantId    String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  users       User[]
+  inventory   Inventory[]
+  sales       Sale[]
+  carts       Cart[]
+  
+  @@map("outlets")
+}
+
+// Product Categories
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  tenantId    String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  products    Product[]
+
+  @@map("categories")
+}
+
+// Products - Master product catalog per tenant
+model Product {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  sku         String?
+  barcode     String?   @unique
+  price       Decimal   @db.Decimal(10, 2)
+  cost        Decimal?  @db.Decimal(10, 2)
+  categoryId  String?
+  isActive    Boolean   @default(true)
+  isCustom    Boolean   @default(false) // For products created at POS
+  tenantId    String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  category    Category? @relation(fields: [categoryId], references: [id])
+  inventory   Inventory[]
+  cartItems   CartItem[]
+  saleItems   SaleItem[]
+
+  @@map("products")
+}
+
+// Inventory - Stock per product per outlet
+model Inventory {
+  id          String    @id @default(cuid())
+  productId   String
+  outletId    String
+  quantity    Int       @default(0)
+  minStock    Int       @default(0)
+  maxStock    Int?
+  lastUpdated DateTime  @default(now())
+  syncStatus  String    @default("synced") // synced, pending, failed
+
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  outlet      Outlet    @relation(fields: [outletId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, outletId])
+  @@map("inventory")
+}
+
+// Customers
+model Customer {
+  id          String    @id @default(cuid())
+  firstName   String
+  lastName    String
+  email       String?
+  phone       String?
+  address     String?
+  isActive    Boolean   @default(true)
+  tenantId    String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  syncStatus  String    @default("synced")
+
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  sales       Sale[]
+  carts       Cart[]
+
+  @@map("customers")
+}
+
+// Shopping Carts - Multiple carts per cashier
+model Cart {
+  id          String     @id @default(cuid())
+  name        String?    // Optional name for cart identification
+  status      CartStatus @default(active)
+  subtotal    Decimal    @default(0) @db.Decimal(10, 2)
+  discount    Decimal    @default(0) @db.Decimal(5, 2) // Percentage discount
+  total       Decimal    @default(0) @db.Decimal(10, 2)
+  userId      String
+  outletId    String
+  customerId  String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  syncStatus  String     @default("synced")
+
+  user        User       @relation(fields: [userId], references: [id])
+  outlet      Outlet     @relation(fields: [outletId], references: [id])
+  customer    Customer?  @relation(fields: [customerId], references: [id])
+  items       CartItem[]
+
+  @@map("carts")
+}
+
+// Cart Items
+model CartItem {
+  id          String    @id @default(cuid())
+  cartId      String
+  productId   String
+  quantity    Int       @default(1)
+  unitPrice   Decimal   @db.Decimal(10, 2)
+  totalPrice  Decimal   @db.Decimal(10, 2)
+  createdAt   DateTime  @default(now())
+  syncStatus  String    @default("synced")
+
+  cart        Cart      @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product     Product   @relation(fields: [productId], references: [id])
+
+  @@map("cart_items")
+}
+
+// Sales - Completed transactions
+model Sale {
+  id              String      @id @default(cuid())
+  saleNumber      String      @unique
+  subtotal        Decimal     @db.Decimal(10, 2)
+  discount        Decimal     @default(0) @db.Decimal(5, 2)
+  total           Decimal     @db.Decimal(10, 2)
+  paymentMethod   PaymentMethod
+  cashReceived    Decimal?    @db.Decimal(10, 2)
+  change          Decimal?    @db.Decimal(10, 2)
+  status          String      @default("completed")
+  userId          String
+  outletId        String
+  customerId      String?
+  createdAt       DateTime    @default(now())
+  syncStatus      String      @default("synced")
+
+  user            User        @relation(fields: [userId], references: [id])
+  outlet          Outlet      @relation(fields: [outletId], references: [id])
+  customer        Customer?   @relation(fields: [customerId], references: [id])
+  items           SaleItem[]
+
+  @@map("sales")
+}
+
+// Sale Items
+model SaleItem {
+  id          String    @id @default(cuid())
+  saleId      String
+  productId   String
+  quantity    Int
+  unitPrice   Decimal   @db.Decimal(10, 2)
+  totalPrice  Decimal   @db.Decimal(10, 2)
+  createdAt   DateTime  @default(now())
+
+  sale        Sale      @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  product     Product   @relation(fields: [productId], references: [id])
+
+  @@map("sale_items")
+}
+
+// Offline Sync Queue - For managing offline operations
+model SyncQueue {
+  id          String    @id @default(cuid())
+  operation   String    // create, update, delete
+  table       String    // table name
+  recordId    String    // record ID
+  data        Json?     // operation data
+  status      String    @default("pending") // pending, processing, completed, failed
+  retryCount  Int       @default(0)
+  tenantId    String
+  outletId    String?
+  userId      String?
+  createdAt   DateTime  @default(now())
+  processedAt DateTime?
+
+  @@map("sync_queue")
+}
+
+enum UserRole {
+  superadmin  // Global access to all tenants
+  admin       // Owner of the business
+  manager     // Sales supervisor
+  cashier     // Cashier
+}
+
+enum CartStatus {
+  active
+  hold
+  completed
+  abandoned
+}
+
+enum PaymentMethod {
+  cash
+  card
+  mixed
+}
