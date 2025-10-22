@@ -26,7 +26,7 @@ import { Label } from '@/components/ui/label'
 import { useOutlets } from '@/hooks/api/use-outlets'
 import { useProducts } from '@/hooks/api/use-products'
 import { formatCurrency } from '@/lib/utils'
-import type { ProductWithInventoryDTO } from 'shared-types'
+import type { CategoryDTO, ProductWithInventoryDTO } from 'shared-types'
 import { 
   Package, 
   Search, 
@@ -38,6 +38,7 @@ import {
   Eye,
   Settings
 } from 'lucide-react'
+import { useCategories } from '@/hooks/api/use-categories'
 
 export function InventoryTable() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -51,16 +52,15 @@ export function InventoryTable() {
   const { data: outlets = [] } = useOutlets()
   const firstOutletId = outlets[0]?.id
 
-  const { data, isLoading: isLoadingProducts } = useProducts({
+  const { data: productsData, isLoading: isLoadingProducts } = useProducts({
     outletId: firstOutletId
   })
-  const products = (data || []) as ProductWithInventoryDTO[]
+  const products = (productsData || []) as ProductWithInventoryDTO[]
 
   // Note: Categories are included in ProductDTO, extract unique categories
-  const categories = Array.from(new Set(products.map(p => p.categoryName).filter(Boolean))).map(name => ({
-    id: name as string,
-    name: name as string
-  }))
+  const {data:categoriesData, isLoading: isLoadingCategories} = useCategories()
+  const categories = categoriesData || [] as CategoryDTO[]
+
 
   const filteredProducts = products.filter(product => {
     const matchesSearch = 

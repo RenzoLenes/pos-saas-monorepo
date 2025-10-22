@@ -56,7 +56,16 @@ export class PrismaProductRepository implements IProductRepository {
     orderBy?: Prisma.ProductOrderByWithRelationInput
     include?: Prisma.ProductInclude
   }): Promise<Product[]> {
-    return await this.db.product.findMany(params)
+    return await this.db.product.findMany({
+    ...params,
+    include:{
+      category: {
+        select:{
+          name: true
+        }
+      }
+    }
+    })
   }
 
   async count(where: Prisma.ProductWhereInput): Promise<number> {

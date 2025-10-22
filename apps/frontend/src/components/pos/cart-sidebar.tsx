@@ -31,6 +31,7 @@ import {
   cartKeys
 } from '@/hooks/api/use-cart'
 import { useCompleteSale, saleKeys } from '@/hooks/api/use-sales'
+import { usePOSActions } from '@/store/pos-store'
 
 interface CartSidebarProps {
   carts: CartDTO[]
@@ -61,6 +62,8 @@ export function CartSidebar({
   const completeSale = useCompleteSale()
   const deleteCart = useDeleteCart()
 
+  const { setCustomer } = usePOSActions()
+  
   const activeCart = carts.find(cart => cart.id === activeCartId)
 
   const handleQuantityChange = async (itemId: string, newQuantity: number) => {
@@ -149,6 +152,8 @@ export function CartSidebar({
 
     try {
       await completeSale.mutateAsync(saleData)
+      await handleDeleteCart(saleData.cartId)
+      setCustomer(null) // Reset selected customer after sale
       setCashReceived('')
       setShowPayment(false)
     } catch (error) {
