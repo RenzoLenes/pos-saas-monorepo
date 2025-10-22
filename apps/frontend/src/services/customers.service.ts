@@ -7,41 +7,46 @@ export const customersService = {
    */
   getAll: async (): Promise<CustomerDTO[]> => {
     const response = await apiClient.get('/customers/search')
-    return response.data
+    return response.data || []
   },
 
   /**
    * Get customer by ID
    */
   getById: async (id: string): Promise<CustomerDTO> => {
-    return await apiClient.get(`/customers/${id}`)
+    const response = await apiClient.get(`/customers/${id}`)
+    return response.data || []
   },
 
   /**
    * Create new customer
    */
   create: async (data: any): Promise<CustomerDTO> => {
-    return await apiClient.post('/customers', data)
+    const response = await apiClient.post('/customers', data)
+    return response.data || []
   },
 
   /**
    * Update customer
    */
   update: async (id: string, data: any): Promise<CustomerDTO> => {
-    return await apiClient.put(`/customers/${id}`, data)
+    const response = await apiClient.put(`/customers/${id}`, data)
+    return response.data || []
   },
 
   /**
    * Delete customer
    */
   delete: async (id: string): Promise<void> => {
-    return await apiClient.delete(`/customers/${id}`)
+    const response = await apiClient.delete(`/customers/${id}`)
+    return response.data || []
   },
 
   /**
    * Get customer sales history
    */
   getSalesHistory: async (id: string): Promise<any[]> => {
-    return await apiClient.get(`/customers/${id}/sales`)
+    const response = await apiClient.get(`/customers/${id}/sales`)
+    return response.data || []
   },
 }

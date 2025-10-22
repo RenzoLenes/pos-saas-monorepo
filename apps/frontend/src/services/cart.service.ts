@@ -6,30 +6,34 @@ export const cartService = {
    * Get all carts for current user
    */
   getMyCarts: async (outletId: string): Promise<CartDTO[]> => {
-    return await apiClient.get('/carts', {
+    const response = await apiClient.get('/carts', {
       params: { outletId },
     })
+    return response.data || []
   },
 
   /**
    * Get cart by ID
    */
   getById: async (id: string): Promise<CartDTO> => {
-    return await apiClient.get(`/carts/${id}`)
+    const response = await apiClient.get(`/carts/${id}`)
+    return response.data || []
   },
 
   /**
    * Create new cart
    */
   create: async (data: any): Promise<CartDTO> => {
-    return await apiClient.post('/carts', data)
+    const response = await apiClient.post('/carts', data)
+    return response.data || []
   },
 
   /**
    * Add item to cart
    */
   addItem: async (cartId: string, data: any): Promise<CartDTO> => {
-    return await apiClient.post(`/carts/${cartId}/items`, data)
+    const response = await apiClient.post(`/carts/${cartId}/items`, data)
+    return response.data || []
   },
 
   /**
@@ -40,42 +44,48 @@ export const cartService = {
     itemId: string,
     data: any
   ): Promise<CartDTO> => {
-    return await apiClient.put(`/carts/${cartId}/items/${itemId}`, data)
+    const response =  await apiClient.put(`/carts/${cartId}/items/${itemId}`, data)
+    return response.data || []
   },
 
   /**
    * Remove item from cart
    */
   removeItem: async (cartId: string, itemId: string): Promise<void> => {
-    return await apiClient.delete(`/carts/${cartId}/items/${itemId}`)
+    const response = await apiClient.delete(`/carts/${cartId}/items/${itemId}`)
+    return response.data || []
   },
 
   /**
    * Apply discount to cart
    */
   applyDiscount: async (cartId: string, discount: number): Promise<CartDTO> => {
-    return await apiClient.put(`/carts/${cartId}/discount`, { discount })
+    const response = await apiClient.put(`/carts/${cartId}/discount`, { discount })
+    return response.data || []
   },
 
   /**
    * Hold cart
    */
   hold: async (cartId: string, name: string): Promise<CartDTO> => {
-    return await apiClient.post(`/carts/${cartId}/hold`, { name })
+    const response = await apiClient.post(`/carts/${cartId}/hold`, { name })
+    return response.data || []
   },
 
   /**
    * Activate held cart
    */
   activate: async (cartId: string): Promise<CartDTO> => {
-    return await apiClient.post(`/carts/${cartId}/activate`)
+    const response = await apiClient.post(`/carts/${cartId}/activate`)
+    return response.data || []
   },
 
   /**
    * Delete cart
    */
   delete: async (cartId: string): Promise<void> => {
-    return await apiClient.delete(`/carts/${cartId}`)
+    const response = await apiClient.delete(`/carts/${cartId}`)
+    return response.data || []
   },
 
   /**
@@ -85,13 +95,15 @@ export const cartService = {
     cartId: string,
     customerId: string | null
   ): Promise<CartDTO> => {
-    return await apiClient.put(`/carts/${cartId}/customer`, { customerId })
+    const response = await apiClient.put(`/carts/${cartId}/customer`, { customerId })
+    return response.data || []
   },
 
   /**
    * Clear cart items
    */
   clear: async (cartId: string): Promise<CartDTO> => {
-    return await apiClient.post(`/carts/${cartId}/clear`)
+    const response = await apiClient.post(`/carts/${cartId}/clear`)
+    return response.data || []
   },
 }

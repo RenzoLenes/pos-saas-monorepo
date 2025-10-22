@@ -53,7 +53,6 @@ export default function POSPage() {
 
   // Get products for selected outlet
   const { data: products } = useProducts({
-    limit: 100,
     outletId: selectedOutletId
   })
 

@@ -16,6 +16,7 @@ export interface ProductDTO {
   tenantId: string
   createdAt: Date
   updatedAt: Date
+  isActive: boolean
 }
 
 export interface ProductSummaryDTO {

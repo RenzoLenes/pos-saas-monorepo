@@ -226,7 +226,8 @@ export const usePOSSelectors = {
   // Cart selectors
   useActiveCarts: (): CartWithItems[] =>
     usePOSStore(
-      (state) => state.carts.filter((cart) => cart.status === 'active')    ),
+      (state) => state.carts.filter((cart) => cart.status === 'active')
+    ),
   useHeldCarts: (): CartWithItems[] =>
     usePOSStore(
       (state) => state.carts.filter((cart) => cart.status === 'hold')

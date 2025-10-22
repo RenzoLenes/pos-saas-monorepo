@@ -6,45 +6,52 @@ export const inventoryService = {
    * Get inventory by outlet
    */
   getByOutlet: async (outletId: string): Promise<InventoryDTO[]> => {
-    return await apiClient.get('/inventory', {
+    
+    const response = await apiClient.get('/inventory', {
       params: { outletId },
     })
+    return response.data || []
   },
 
   /**
    * Get inventory by ID
    */
   getById: async (id: string): Promise<InventoryDTO> => {
-    return await apiClient.get(`/inventory/${id}`)
+    const response = await apiClient.get(`/inventory/${id}`)
+    return response.data || []
   },
 
   /**
    * Update stock
    */
   updateStock: async (data: any): Promise<InventoryDTO> => {
-    return await apiClient.put('/inventory/stock', data)
+    const response = await apiClient.put('/inventory/stock', data)
+    return response.data || []
   },
 
   /**
    * Transfer inventory between outlets
    */
   transfer: async (data: any): Promise<void> => {
-    return await apiClient.post('/inventory/transfer', data)
+    const response = await apiClient.post('/inventory/transfer', data)
+    return response.data || []
   },
 
   /**
    * Get low stock items
    */
   getLowStock: async (outletId: string): Promise<InventoryDTO[]> => {
-    return await apiClient.get('/inventory/low-stock', {
+    const response = await apiClient.get('/inventory/low-stock', {
       params: { outletId },
     })
+    return response.data || []
   },
 
   /**
    * Bulk update stock
    */
   bulkUpdate: async (updates: any[]): Promise<InventoryDTO[]> => {
-    return await apiClient.post('/inventory/bulk-update', { updates })
+    const response = await apiClient.post('/inventory/bulk-update', { updates })
+    return response.data || []
   },
 }

@@ -6,34 +6,39 @@ export const categoriesService = {
    * Get all categories
    */
   getAll: async (): Promise<CategoryDTO[]> => {
-    return await apiClient.get('/categories')
+    const response = await apiClient.get('/categories')
+    return response.data || []
   },
 
   /**
    * Get category by ID
    */
   getById: async (id: string): Promise<CategoryDTO> => {
-    return await apiClient.get(`/categories/${id}`)
+    const response = await apiClient.get(`/categories/${id}`)
+    return response.data || []
   },
 
   /**
    * Create new category
    */
   create: async (data: any): Promise<CategoryDTO> => {
-    return await apiClient.post('/categories', data)
+    const response = await apiClient.post('/categories', data)
+    return response.data || []
   },
 
   /**
    * Update category
    */
   update: async (id: string, data: any): Promise<CategoryDTO> => {
-    return await apiClient.put(`/categories/${id}`, data)
+    const response = await apiClient.put(`/categories/${id}`, data)
+    return response.data || []
   },
 
   /**
    * Delete category
    */
   delete: async (id: string): Promise<void> => {
-    return await apiClient.delete(`/categories/${id}`)
+    const response = await apiClient.delete(`/categories/${id}`)
+    return response.data || []
   },
 }

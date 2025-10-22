@@ -31,6 +31,7 @@ export class ProductMapper {
       tenantId: product.tenantId,
       createdAt: product.createdAt,
       updatedAt: product.updatedAt,
+      isActive: product.isActive,
     }
   }
 

@@ -11,41 +11,48 @@ export const productService = {
     if (params?.outletId) queryParams.append('outletId', params.outletId)
 
     const queryString = queryParams.toString()
-    return await apiClient.get(`/products${queryString ? `?${queryString}` : ''}`)
+
+    const response = await apiClient.get(`/products${queryString ? `?${queryString}` : ''}`)
+    return response.data || [] 
   },
 
   /**
    * Get product by ID
    */
   getById: async (id: string): Promise<ProductDTO> => {
-    return await apiClient.get(`/products/${id}`)
+    const response = await apiClient.get(`/products/${id}`)
+    return response.data || []
   },
 
   /**
    * Get product by barcode
    */
   getByBarcode: async (barcode: string): Promise<ProductDTO> => {
-    return await apiClient.get(`/products/barcode/${barcode}`)
+    const response = await apiClient.get(`/products/barcode/${barcode}`)
+    return response.data || []
   },
 
   /**
    * Create new product
    */
   create: async (data: any): Promise<ProductDTO> => {
-    return await apiClient.post('/products', data)
+    const response = await apiClient.post('/products', data)
+    return response.data || []
   },
 
   /**
    * Update product
    */
   update: async (id: string, data: any): Promise<ProductDTO> => {
-    return await apiClient.put(`/products/${id}`, data)
+    const response = await apiClient.put(`/products/${id}`, data)
+    return response.data || []
   },
 
   /**
    * Delete product
    */
   delete: async (id: string): Promise<void> => {
-    return await apiClient.delete(`/products/${id}`)
+    const response = await apiClient.delete(`/products/${id}`)
+    return response.data || []
   },
 }

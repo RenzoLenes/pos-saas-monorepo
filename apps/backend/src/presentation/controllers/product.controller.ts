@@ -8,7 +8,6 @@ export class ProductController {
     const tenantId = req.user!.tenantId || ''
     const includeInactive = req.query.includeInactive === 'true'
 
-    console.log('Tenant ID:', tenantId)
     const useCase = UseCaseFactory.getGetAllProductsUseCase()
 
     const products = await useCase.execute({ tenantId, includeInactive })

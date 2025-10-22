@@ -6,34 +6,39 @@ export const usersService = {
    * Get all users
    */
   getAll: async (): Promise<UserDTO[]> => {
-    return await apiClient.get('/users')
+    const response = await apiClient.get('/users')
+    return response.data || []
   },
 
   /**
    * Get user by ID
    */
   getById: async (id: string): Promise<UserDTO> => {
-    return await apiClient.get(`/users/${id}`)
+    const response = await apiClient.get(`/users/${id}`)
+    return response.data || []
   },
 
   /**
    * Get current authenticated user
    */
   getCurrent: async (): Promise<UserDTO> => {
-    return await apiClient.get('/users/me')
+    const response = await apiClient.get('/users/me')
+    return response.data || []
   },
 
   /**
    * Update user
    */
   update: async (id: string, data: any): Promise<UserDTO> => {
-    return await apiClient.put(`/users/${id}`, data)
+    const response = await apiClient.put(`/users/${id}`, data)
+    return response.data || []
   },
 
   /**
    * Delete user
    */
   delete: async (id: string): Promise<void> => {
-    return await apiClient.delete(`/users/${id}`)
+    const response = await apiClient.delete(`/users/${id}`)
+    return response.data || []
   },
 }

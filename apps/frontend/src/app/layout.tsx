@@ -4,6 +4,8 @@ import { ClerkProvider } from '@clerk/nextjs'
 import { Toaster } from '@/components/ui/toaster'
 import { ErrorBoundary } from '@/components/error-boundary'
 import { Providers } from '@/providers/providers'
+import { AuthProvider } from '@/lib/auth-context'
+import { ApiClientProvider } from '@/lib/api-client-provider'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -41,10 +43,16 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body className={inter.className}>
-          <Providers>
-              {children}
-              <Toaster />
-          </Providers>
+          <AuthProvider>
+            <ApiClientProvider>
+              <ErrorBoundary>
+                <Providers>
+                  {children}
+                  <Toaster />
+                </Providers>
+              </ErrorBoundary>
+            </ApiClientProvider>
+          </AuthProvider>
         </body>
       </html>
     </ClerkProvider>

@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { usePOSStore, usePOSSelectors } from '@/store/pos-store'
+import { usePOSStore } from '@/store/pos-store'
 import { OfflineIndicator } from '@/components/pos/offline-indicator'
 import { OutletSelector } from '@/components/pos/outlet-selector'
 import { cn } from '@/lib/utils'
@@ -72,7 +72,7 @@ const navigation = [
 export function DashboardLayout({ children, showOutletSelector = true }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const pathname = usePathname()
-  const { pendingOperations } = usePOSSelectors.useSyncStatus()
+  const pendingOperations = usePOSStore((state) => state.pendingOperations)
 
   return (
     <div className="h-screen flex overflow-hidden bg-gray-100">
@@ -262,7 +262,7 @@ function PageTitle({ pathname }: { pathname: string }) {
 }
 
 function PendingOperationsBadge() {
-  const { pendingOperations } = usePOSSelectors.useSyncStatus()
+  const pendingOperations = usePOSStore((state) => state.pendingOperations)
 
   if (pendingOperations === 0) return null
 
